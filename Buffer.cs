@@ -10,10 +10,17 @@ namespace Lab2Console
     {
         public List<int> BufferSize; //Current buffer size in each cell
         public Event EventObj = new Event();
+        List<int> vp_current_list = new List<int>();
         public List<Event> ToPrintEvents = new List<Event>();
         float size;
-        float bmax = 1500; //30s value
-        float capacity = 3000;
+        float bmax; //30s value
+        float capacity;
+
+        public List<int> vpList
+        {
+            get { return vp_current_list;  }
+            set { vp_current_list = value; }
+        }
 
         public List<Event> EventsToPrint
         {
@@ -54,13 +61,15 @@ namespace Lab2Console
 
         }
 
-        public Buffer()
+        public Buffer(int _vp)
         {
             BufferSize = new List<int>();
             size = 0;
+            bmax = 30 * _vp;
+            capacity = 30 * _vp;
         }
 
-        public float load(Event eventE, ref float nowTime)
+        public float load(List<Event> eventE, ref float nowTime)
         { /*
             float TimeLoad = 0;
 
@@ -81,20 +90,22 @@ namespace Lab2Console
             */
             float TimeLoad = 0;
 
-            EventObj = eventE;
+            EventObj = eventE[0];
             size = size + EventObj.StreamVelocity * EventObj.Duration; //Checking if buffer size would exceed bmax
             TimeLoad += EventObj.Duration;
             if (size > bmax) //exceeded
             {
                 size = size - EventObj.StreamVelocity * EventObj.Duration; //Coming back with size to beginning value
                 TimeLoad -= EventObj.Duration; 
-                TimeLoad += (bmax - size) / eventE.StreamVelocity;
-                size += eventE.StreamVelocity * TimeLoad;
+                TimeLoad += (bmax - size) / eventE[0].StreamVelocity;
+                size += eventE[0].StreamVelocity * TimeLoad;
             }
             nowTime += TimeLoad;
             EventObj.timeFromStart = nowTime;
             EventObj.Duration = TimeLoad;
             ToPrintEvents.Add(EventObj);
+            vpList.Add(0); //While loading, vp is always equal to 0
+
             return TimeLoad;
         } 
     }

@@ -6,17 +6,21 @@ using System.Threading.Tasks;
 
 namespace Lab2Console
 {
+    enum Type {  low, high };
     class Event
     {
+        int Type;
         float Vs;
         float duration;
         float timeInProgramm;
+        float beginTime;
 
         public Event()
         {
             Vs = 0;
             duration = 0;
             timeInProgramm = 0;
+            beginTime = 0;
         }
 
         public Event(float Vs, float duration)
@@ -25,6 +29,21 @@ namespace Lab2Console
             this.duration = duration;
 
         }
+
+        public Event(float Vs, float duration, float beginTime, int Type)
+        {
+            this.Vs = Vs;
+            this.duration = duration;
+            this.beginTime = beginTime;
+            this.Type = Type;
+
+        }
+        public int EventType
+        {
+            get {return Type; }
+            set {this.Type=value; }
+        }
+  
 
         public float  StreamVelocity
             {
@@ -44,6 +63,11 @@ namespace Lab2Console
             set { this.timeInProgramm = value; }
         }
 
+        public float BeginingTime
+        {
+            get { return beginTime; }
+            set { this.beginTime = value; }
+        }
 
     }
 }

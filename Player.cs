@@ -9,12 +9,15 @@ namespace Lab2Console
     class Player
     {
 
-        Buffer Buff1 = new Buffer();
+        Buffer Buff1;
         Stream Stream1 = new Stream();
-        int vp; //Playing velocity [b/s]
+        int[] vp=new int [3]; //Playing velocity [b/s]
+        int vp_current;
         int R; //Resolution of image per second [b]
-        Event Event1 = new Event();
+        //Event Event1 = new Event();
+        List<Event> Event1 = new List<Event>();
         int timeSimulation;
+        float currentTime = 0;
 
         public Buffer Get_Buffer
         {
@@ -28,7 +31,7 @@ namespace Lab2Console
             set { Stream1 = value; }
         }
 
-        public int Get_vp
+        public int[] Get_vp
         {
             get { return vp; }
             set { vp = value; }
@@ -43,27 +46,35 @@ namespace Lab2Console
         public Player ()
         {
             R = 5; //10 klatek na sekundę
-            vp = 50;
+            vp[2] = 50;
+            vp[1] = 40;
+            vp[0] = 30;
             timeSimulation = 60;
+            Buff1 = new Buffer(vp[2]); //high vp
         }
 
-        public Player(int R, int vp, int timeSimulation)
+        public Player(int R, int vpHigh,int vpMedium,
+            int vpLow, int timeSimulation)
         {
             this.R = R;
-            this.vp = vp;
+            this.vp[0] = vpLow;
+            this.vp[1] = vpMedium;
+            this.vp[2] = vpHigh;
             this.timeSimulation = timeSimulation;
+            Buff1 = new Buffer(vp[2]); //high vp
         }
 
         public void run()
         {
             Random rnd =new Random();
 
-            float currentTime = 0;
+           
             float timeEvent = 0;
             bool AutoGenEvent = false;
-            Event E = new Event();
+            List< Event> E = new List< Event>();
             float temp;
             float velocity=0;
+            //string pathBuffSize = "C:/Users/Daniel/Documents/Visual Studio 2015/Projects/Lab2Console/Lab2Console/PlotBuffSize.txt";
             string pathBuffSize = "E:/Piotr/Programowanie/C#/AISDE2/Lab2Console/Lab2Console/PlotBuffSize.txt";
             System.IO.StreamWriter fileY = new System.IO.StreamWriter(pathBuffSize);
 
@@ -72,54 +83,68 @@ namespace Lab2Console
                 //fileY.WriteLine(Buff1.BufSize);
                 if(!AutoGenEvent)
                 {
-                    E = Stream1.GenerationEvent(rnd);
-                    timeEvent = E.Duration;
+                    E.Add( Stream1.GenerationEvent(rnd,ref currentTime));
+                    timeEvent = E[0].Duration;
                 }
 
                 if (Buff1.BufSize > 0)
                 {
                    
                     temp = play(E,ref currentTime);
-                   // currentTime += temp;
+                    fileY.WriteLine($"{ (int)Buff1.BufSize}.{(int)((Buff1.BufSize - (int)Buff1.BufSize)*100)}");
+                    // currentTime += temp;
 
-                    if (temp <timeEvent)
+                    if (temp < timeEvent) //Event has been cut before 
                     {
                         AutoGenEvent = true;
-                        velocity = E.StreamVelocity;
-                        E = Stream1.GenerationEvent(rnd);
-                        E.StreamVelocity = velocity;
+                        velocity = E[0].StreamVelocity;
+                        E.RemoveAt(0);
+                        E.Add(Stream1.GenerationEvent(rnd,ref currentTime));
+                        E[0].StreamVelocity = velocity;
                         timeEvent -= temp;
-                        E.Duration = timeEvent;
+                        E[0].Duration = timeEvent;
 
                         //New Event would have time equal to length of this short, velocity stays the same as it was
                     }
                     else
+                    {
                         AutoGenEvent = false;
+                        E.RemoveAt(0);
+                    }
                     //fileY.Write("Play");
-                    fileY.WriteLine(Buff1.BufSize);
+                  
                 }
                 else if (Buff1.BufSize <= 0)
                 {
                     while (Buff1.BufSize < Buff1.Bmax)
                     {
-                        E = Stream1.GenerationEvent(rnd);
-                        timeEvent = E.Duration;
+                        if (E.Count > 0)
+                        {
+                            E.RemoveAt(0);
+                        }
+                        E.Add (Stream1.GenerationEvent(rnd,ref currentTime));
+                        timeEvent = E[0].Duration;
                         temp = Buff1.load(E, ref currentTime);
-                        
+                        fileY.WriteLine($"{ (int)Buff1.BufSize}.{(int)((Buff1.BufSize-(int)Buff1.BufSize)*100)}");
+
                         if (temp < timeEvent)
                         {
                             AutoGenEvent = true;
-                            velocity = E.StreamVelocity;                         
-                            E = Stream1.GenerationEvent(rnd);
-                            E.StreamVelocity = velocity;
+                            velocity = E[0].StreamVelocity;
+                            E.RemoveAt(0);
+                            E.Add(Stream1.GenerationEvent(rnd, ref currentTime));
+                            E[0].StreamVelocity = velocity;
                             timeEvent -= temp;
-                            E.Duration = timeEvent;
+                            E[0].Duration = timeEvent;
                             //E.Duration = E.Duration - temp;
                             //velocity stays the same
                         }
                         else
+                        {
                             AutoGenEvent = false;
-                        fileY.WriteLine(Buff1.BufSize);
+                            E.RemoveAt(0);
+                        }
+                       
                         //fileY.Write("Load");
                     }
 
@@ -128,41 +153,64 @@ namespace Lab2Console
             fileY.Close();
         }
 
-        public float play(Event eventE,ref float  currentTime)
+        public float play(List<Event> eventE,ref float  currentTime)
         {
             float Default = Buff1.BufSize;
             float time = 0;
-            Buff1.BufSize = Buff1.BufSize - (vp * eventE.Duration //Calculating actual Buffer size
-                    - eventE.Duration * eventE.StreamVelocity);
-            if (eventE.StreamVelocity < vp)
+            int ground = 0;
+
+            if (Buff1.BufSize > vp[1] * 30)
             {
-                if (Buff1.BufSize < 0)
+                vp_current = vp[2];
+                ground = vp[1] * 30;
+
+            }
+            else if (Buff1.BufSize > vp[0] * 30)
+            {
+                vp_current = vp[1];
+                ground = vp[0] * 30;
+            }
+            else
+            {
+                vp_current = vp[0];
+                ground = 0;
+            }
+
+            Buff1.BufSize = Buff1.BufSize - (vp_current * eventE[0].Duration //Calculating actual Buffer size
+                    - eventE[0].Duration * eventE[0].StreamVelocity);
+            if (eventE[0].StreamVelocity < vp_current)
+            {
+                if (Buff1.BufSize < ground)
                 {
                     Buff1.BufSize = Default;
-                    time = -Buff1.BufSize / (vp - eventE.StreamVelocity);
-                    Buff1.BufSize = 0;
-                    time = eventE.Duration - time;
+                    time = (ground-Buff1.BufSize) / (-vp_current + eventE[0].StreamVelocity);
+                    Buff1.BufSize = ground;
+                    time = eventE[0].Duration - time;
+                    
                 }
-                time = eventE.Duration;
+                else
+                    time = eventE[0].Duration;
             }
-            else if (eventE.StreamVelocity == vp)
+            else if (eventE[0].StreamVelocity == vp_current)
             {
-                return eventE.Duration;
+                return eventE[0].Duration;
             }
-            else //(eventE.StreamVelocity > vp)
+            else //(eventE.StreamVelocity > vp_current)
             {
                 if(Buff1.BufSize > Buff1.Capacity)
                 {
                     Buff1.BufSize = Buff1.Capacity;
                 }
-                time = eventE.Duration;
+                time = eventE[0].Duration;
                 //else - Buff1.BufSize calculated correctly, time = eventE.Duration;
             }
-
+            
             currentTime += time;
-            eventE.timeFromStart = currentTime;
-            eventE.Duration = time;
-            Buff1.EventsToPrint.Add(eventE);
+            eventE[0].timeFromStart = currentTime;
+            eventE[0].Duration = time;
+            Buff1.EventsToPrint.Add(eventE[0]);
+            Buff1.vpList.Add(vp_current);
+
             return time;
         }
 

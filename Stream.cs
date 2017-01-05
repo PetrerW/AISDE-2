@@ -41,18 +41,73 @@ namespace Lab2Console
                 vs.Add(0);
         }*/
 
-        public Event GenerationEvent(Random rnd)
+        public Event GenerationEvent(Random rnd,ref float currentTime)
         {
-            
-            float velocity = rnd.Next(20, 81);
+            bool auto=true;
+            float velocity;
+            // bool high= true;
+            if (auto == true)
+            {
+                velocity= rnd.Next(20, 81);
+            }
+            else
+            {
+             if( currentTime<25)
+                {
+                    velocity = 30;
+                }
+             else if(currentTime>=25 && currentTime<50)
+                {
+                    velocity = 65;
+                }
+             else if (currentTime>=50 && currentTime<75)
+                {
+                    velocity = 30;
+                }
+                else 
+                {
+                    velocity =65;
+                }
 
 
-           float time = (float)rnd.NextDouble();
+            }
+            /*         if (auto)
+                     {
+                          velocity = rnd.Next(20, 81);
+                     }
+                     else
+                     {
+                         if (high == true)
+                         {
+                             velocity = 70;
+                             high = false;
+                         }
+                         else
+                         {
+                             velocity = 20;
+                             high = true;
+                         }
+
+                     }*/
+
+            float time = (float)rnd.NextDouble();
+            int kind;
+
+            if (velocity<40)
+            {
+                kind = 0;
+            }
+            else
+            {
+                kind = 1;
+            }
 
               time= (float) ((1 / -0.9) * Math.Log(1 - time) * (2) + 5);
-            Event tmp = new Event(velocity, time);
+            Event tmp = new Event(velocity, time,currentTime,kind);
 
             return tmp;
         }
+
+
     }
 }
