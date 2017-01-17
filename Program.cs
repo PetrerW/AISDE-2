@@ -18,13 +18,13 @@ namespace Lab2Console
             MyPlayer.run();
 
             //string pathTime = "C:/Users/Daniel/Documents/Visual Studio 2015/Projects/Lab2Console/Lab2Console/PlotDataTime.txt";
-            string pathTime = "E:/Piotr/Programowanie/C#/AISDE2/Lab2Console/Lab2Console/PlotDataTime.txt";
+            string pathTime = "E:/Piotr/Programowanie/C#/AISDE2/Stare/Lab2Console/Lab2Console/PlotDataTime.txt";
             //string pathStreamVelocity = "C:/Users/Daniel/Documents/Visual Studio 2015/Projects/Lab2Console/Lab2Console/PlotStreamVelocity.txt";
-            string pathStreamVelocity = "E:/Piotr/Programowanie/C#/AISDE2/Lab2Console/Lab2Console/PlotStreamVelocity.txt";
+            string pathStreamVelocity = "E:/Piotr/Programowanie/C#/AISDE2/Stare/Lab2Console/Lab2Console/PlotStreamVelocity.txt";
             //string pathTimefromstart = "C:/Users/Daniel/Documents/Visual Studio 2015/Projects/Lab2Console/Lab2Console/current.txt";
-            string pathTimefromstart = "E:/Piotr/Programowanie/C#/AISDE2/Lab2Console/Lab2Console/current.txt";
+            string pathTimefromstart = "E:/Piotr/Programowanie/C#/AISDE2/Stare/Lab2Console/Lab2Console/current.txt";
             //SCIEZKA DANIELA = 
-            string pathVpList = "E:/Piotr/Programowanie/C#/AISDE2/Lab2Console/Lab2Console/vpList.txt";
+            string pathVpList = "E:/Piotr/Programowanie/C#/AISDE2/Stare/Lab2Console/Lab2Console/vpList.txt";
 
             System.IO.StreamWriter fileX = new System.IO.StreamWriter(pathTime);
             System.IO.StreamWriter fileY = new System.IO.StreamWriter(pathStreamVelocity);

@@ -75,7 +75,7 @@ namespace Lab2Console
             float temp;
             float velocity=0;
             //string pathBuffSize = "C:/Users/Daniel/Documents/Visual Studio 2015/Projects/Lab2Console/Lab2Console/PlotBuffSize.txt";
-            string pathBuffSize = "E:/Piotr/Programowanie/C#/AISDE2/Lab2Console/Lab2Console/PlotBuffSize.txt";
+            string pathBuffSize = "E:/Piotr/Programowanie/C#/AISDE2/Stare/Lab2Console/Lab2Console/PlotBuffSize.txt";
             System.IO.StreamWriter fileY = new System.IO.StreamWriter(pathBuffSize);
 
             while (currentTime < timeSimulation)

@@ -43,7 +43,7 @@ namespace Lab2Console
 
         public Event GenerationEvent(Random rnd,ref float currentTime)
         {
-            bool auto=true;
+            bool auto=false;
             float velocity;
             // bool high= true;
             if (auto == true)
@@ -52,21 +52,21 @@ namespace Lab2Console
             }
             else
             {
-             if( currentTime<25)
+             if( currentTime<100)
                 {
                     velocity = 30;
                 }
-             else if(currentTime>=25 && currentTime<50)
+             else if(currentTime>=100 && currentTime<200)
                 {
-                    velocity = 65;
+                    velocity = 85;
                 }
-             else if (currentTime>=50 && currentTime<75)
+             else if (currentTime>=200 && currentTime<300)
                 {
                     velocity = 30;
                 }
                 else 
                 {
-                    velocity =65;
+                    velocity =85;
                 }
 
 
