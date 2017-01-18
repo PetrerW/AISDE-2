@@ -85,6 +85,7 @@ namespace Lab2Console
                 {
                     E.Add( Stream1.GenerationEvent(rnd,ref currentTime));
                     timeEvent = E[0].Duration;
+                    E[0].EventType = 1;
                 }
 
                 if (Buff1.BufSize > 0)
@@ -96,13 +97,44 @@ namespace Lab2Console
 
                     if (temp < timeEvent) //Event has been cut before 
                     {
-                        AutoGenEvent = true;
-                        velocity = E[0].StreamVelocity;
-                        E.RemoveAt(0);
-                        E.Add(Stream1.GenerationEvent(rnd,ref currentTime));
-                        E[0].StreamVelocity = velocity;
-                        timeEvent -= temp;
-                        E[0].Duration = timeEvent;
+                        if (E[0].EventType == 1)
+                        {
+                            AutoGenEvent = true;
+                            velocity = E[0].StreamVelocity;
+                            E.RemoveAt(0);
+                            E.Add(Stream1.GenerationEvent(rnd, ref currentTime));
+                            E[0].EventType = 0;
+
+                            if (Buff1.BufSize > vp[1] * 30)
+                            {
+                                E[0].nextV = vp[2];
+                                
+
+                            }
+                            else if (Buff1.BufSize > vp[0] * 30)
+                            {
+                                E[0].nextV = vp[1];
+                                
+                            }
+                            else
+                            {
+                                E[0].nextV = vp[0];
+                                
+                            }
+
+
+                            E.Add(Stream1.GenerationEvent(rnd, ref currentTime));
+                            E[1].EventType = 1;
+                            E[1].StreamVelocity = velocity;
+                            timeEvent -= temp;
+                            E[1].Duration = timeEvent;
+                        }
+                        
+                            
+                          
+                            
+                            
+                        
 
                         //New Event would have time equal to length of this short, velocity stays the same as it was
                     }
@@ -123,6 +155,7 @@ namespace Lab2Console
                             E.RemoveAt(0);
                         }
                         E.Add (Stream1.GenerationEvent(rnd,ref currentTime));
+                        E[0].EventType = 1;
                         timeEvent = E[0].Duration;
                         temp = Buff1.load(E, ref currentTime);
                         fileY.WriteLine($"{ (int)Buff1.BufSize}.{(int)((Buff1.BufSize-(int)Buff1.BufSize)*100)}");
@@ -133,6 +166,7 @@ namespace Lab2Console
                             velocity = E[0].StreamVelocity;
                             E.RemoveAt(0);
                             E.Add(Stream1.GenerationEvent(rnd, ref currentTime));
+                            E[0].EventType = 1;
                             E[0].StreamVelocity = velocity;
                             timeEvent -= temp;
                             E[0].Duration = timeEvent;
@@ -158,6 +192,12 @@ namespace Lab2Console
             float Default = Buff1.BufSize;
             float time = 0;
             int ground = 0;
+
+            if (eventE[0].EventType == 0)
+            {
+                vp_current = (int)eventE[0].nextV;
+                eventE.RemoveAt(0);
+            }
 
             if (Buff1.BufSize > vp[1] * 30)
             {
@@ -186,7 +226,7 @@ namespace Lab2Console
                     time = (ground-Buff1.BufSize) / (-vp_current + eventE[0].StreamVelocity);
                     Buff1.BufSize = ground;
                     time = eventE[0].Duration - time;
-                    
+                    //
                 }
                 else
                     time = eventE[0].Duration;
