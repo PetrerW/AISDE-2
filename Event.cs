@@ -14,6 +14,7 @@ namespace Lab2Console
         float duration;
         float timeInProgramm;
         float beginTime;
+        float next;
 
         public Event()
         {
@@ -30,6 +31,8 @@ namespace Lab2Console
 
         }
 
+        
+
         public Event(float Vs, float duration, float beginTime, int Type)
         {
             this.Vs = Vs;
@@ -43,6 +46,13 @@ namespace Lab2Console
             get {return Type; }
             set {this.Type=value; }
         }
+
+        public float nextV
+        {
+            get { return next; }
+            set { next = value; }
+        }
+
   
 
         public float  StreamVelocity
